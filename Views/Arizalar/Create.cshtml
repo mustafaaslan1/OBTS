@@ -1,0 +1,142 @@
+﻿@model OBTS_Web.Models.Ariza
+
+@{
+    ViewData["Title"] = "Yeni Arıza / Olay Bildirimi";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
+            @if (TempData["BasariMesaji"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["BasariMesaji"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white py-4 px-4 text-center">
+                    <h3 class="mb-0 fw-bold"><i class="bi bi-shield-exclamation me-2"></i>Yeni Arıza / Olay Bildirimi</h3>
+                    <p class="mb-0 text-white-50 small mt-1">Devlet Hava Meydanları İşletmesi - Teknik Servis Talep Formu</p>
+                </div>
+
+                <div class="card-body p-5 bg-light">
+                    <form asp-action="Create" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-4" role="alert"></div>
+
+                        <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-person-badge me-2"></i>Kişisel ve Konum Bilgileri</h5>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="BildirenKisi" class="form-label fw-bold text-secondary">Ad Soyad</label>
+                                <input asp-for="BildirenKisi" class="form-control rounded-3 py-2" placeholder="Örn: Mustafa Aslan" />
+                                <span asp-validation-for="BildirenKisi" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mt-3 mt-md-0">
+                                <label asp-for="DahiliNo" class="form-label fw-bold text-secondary">Dahili Numara</label>
+                                <input asp-for="DahiliNo" class="form-control rounded-3 py-2" placeholder="Örn: 1453" />
+                                <span asp-validation-for="DahiliNo" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="OdaNo" class="form-label fw-bold text-secondary">Oda / Birim Numarası</label>
+                                <input asp-for="OdaNo" class="form-control rounded-3 py-2" placeholder="Örn: B-102 veya Bilgi İşlem" />
+                                <span asp-validation-for="OdaNo" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mt-3 mt-md-0">
+                                <label asp-for="KonumId" class="form-label fw-bold text-secondary">Lokasyon / Konum</label>
+                                <select asp-for="KonumId" class="form-select rounded-3 py-2" asp-items="ViewBag.Konumlar">
+                                    <option value="">Lütfen Bir Konum Seçiniz</option>
+                                </select>
+                                <span asp-validation-for="KonumId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <h5 class="text-primary border-bottom pb-2 mb-3 mt-4"><i class="bi bi-pc-display-horizontal me-2"></i>Donanım ve Arıza Detayları</h5>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Baslik" class="form-label fw-bold text-secondary">Arıza / Olay Başlığı</label>
+                                <input asp-for="Baslik" class="form-control rounded-3 py-2" placeholder="Örn: Yürüyen Merdiven / Ağ Arızası" />
+                                <span asp-validation-for="Baslik" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mt-3 mt-md-0">
+                                <label asp-for="Kategori" class="form-label fw-bold text-secondary">Arıza Kategorisi</label>
+                                <select asp-for="Kategori" class="form-select rounded-3 py-2">
+                                    <option value="">Seçiniz...</option>
+                                    <option value="Donanım">Donanım (Fiziksel Cihaz)</option>
+                                    <option value="Yazılım">Yazılım / Sistem</option>
+                                    <option value="Ağ ve Güvenlik">Ağ, İnternet ve Güvenlik</option>
+                                    <option value="Elektrik / Altyapı">Elektrik / İklimlendirme</option>
+                                    <option value="Diğer">Diğer</option>
+                                </select>
+                                <span asp-validation-for="Kategori" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="BimKodu" class="form-label fw-bold text-secondary">BİM / Demirbaş Kodu</label>
+                                <input asp-for="BimKodu" class="form-control rounded-3 py-2" placeholder="Örn: DHMI-BIM-2026-045" />
+                                <span asp-validation-for="BimKodu" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mt-3 mt-md-0">
+                                <label asp-for="UrunMarkaModel" class="form-label fw-bold text-secondary">Ürün Marka ve Modeli</label>
+                                <input asp-for="UrunMarkaModel" class="form-control rounded-3 py-2" placeholder="Örn: HP LaserJet Pro M428 veya Cisco 2960" />
+                                <span asp-validation-for="UrunMarkaModel" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <h5 class="text-primary border-bottom pb-2 mb-3 mt-4"><i class="bi bi-exclamation-triangle-fill me-2"></i>Öncelik ve Operasyonel Etki</h5>
+
+                        <div class="row mb-4 align-items-center bg-white p-3 rounded-3 border">
+                            <div class="col-md-6">
+                                <label asp-for="OncelikDerecesi" class="form-label fw-bold text-secondary">Öncelik Derecesi</label>
+                                <select asp-for="OncelikDerecesi" class="form-select rounded-3 py-2 border-primary">
+                                    <option value="">Seçiniz...</option>
+                                    <option value="Düşük">Düşük (Rutin işlemler, acelesi yok)</option>
+                                    <option value="Normal">Normal (Günlük işleyiş arızası)</option>
+                                    <option value="Acil">Acil (İş süreçlerini doğrudan yavaşlatıyor)</option>
+                                    <option value="Kritik">Kritik (Operasyon durdu / Radar-Haberleşme kesintisi)</option>
+                                </select>
+                                <span asp-validation-for="OncelikDerecesi" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mt-3 mt-md-0">
+                                <div class="form-check form-switch d-flex align-items-center mt-4">
+                                    <input class="form-check-input fs-4 me-2" type="checkbox" asp-for="UcusOperasyonunuEtkiliyorMu" id="ucusSwitch">
+                                    <label class="form-check-label fw-bold text-danger" for="ucusSwitch" id="ucusLabel">
+                                        Uçuş Operasyonunu Etkiliyor Mu?
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Aciklama" class="form-label fw-bold text-secondary">Detaylı Açıklama</label>
+                            <textarea asp-for="Aciklama" class="form-control rounded-3" rows="4" placeholder="Arızanın durumunu, başlangıç zamanını ve yaşanan belirtileri detaylıca tarif ediniz..."></textarea>
+                            <span asp-validation-for="Aciklama" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Arıza Fotoğrafı <span class="text-muted fw-normal">(Opsiyonel)</span></label>
+                            <input type="file" name="fotografDosyasi" class="form-control rounded-3 py-2" accept=".jpg,.jpeg,.png" />
+                            <div class="form-text text-muted small"><i class="bi bi-info-circle me-1"></i>Sisteme sadece .jpg ve .png formatında görsel yüklenebilir.</div>
+                        </div>
+
+                        <hr class="my-4 text-muted">
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-primary px-5 py-3 rounded-pill fw-bold shadow-sm w-100 w-md-auto">
+                                <i class="bi bi-send-fill me-1"></i> Arıza Bildirimini Gönder
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

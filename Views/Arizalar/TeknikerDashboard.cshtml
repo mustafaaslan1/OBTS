@@ -1,0 +1,590 @@
+﻿@model IEnumerable<OBTS_Web.Models.Ariza>
+
+@{
+    ViewData["Title"] = "Tekniker Paneli";
+}
+
+<div class="container-fluid pt-1 pb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3" id="headerRow">
+        <h2 class="fw-bold text-dark m-0" id="pageTitle"><i class="bi bi-pc-display-horizontal text-primary me-2"></i>Tekniker Arıza Yönetim Paneli</h2>
+        <div class="ms-auto">
+            <button id="toggleViewBtn" class="btn btn-outline-dark rounded-pill fw-bold shadow-sm">
+                <i class="bi bi-arrows-fullscreen me-1"></i> Sadece Liste
+            </button>
+        </div>
+    </div>
+
+    @if (User.IsInRole("Yonetici"))
+    {
+        <div class="mb-4" id="yoneticiReturnDiv">
+            <a href="@Url.Action("YoneticiDashboard", "Arizalar")" class="btn btn-sm btn-outline-secondary rounded-pill shadow-sm px-3">
+                <i class="bi bi-arrow-left me-1"></i>Yönetici Paneline Dön
+            </a>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm mb-4" id="filterSection" style="background-color: #e9ecef;">
+        <div class="card-body p-4">
+            <form class="row g-3 align-items-end" id="filterForm" onsubmit="return false;">
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold text-secondary small">BİM / Demirbaş No</label>
+                    <input type="text" class="form-control form-control-sm rounded-3" id="fltBim" placeholder="Örn: DHMI-045">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold text-secondary small">Arıza No</label>
+                    <input type="number" class="form-control form-control-sm rounded-3" id="fltId" placeholder="Örn: 191">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold text-secondary small">Marka / Model</label>
+                    <input type="text" class="form-control form-control-sm rounded-3" id="fltMarka" placeholder="Örn: HP, Lenovo...">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold text-secondary small">Kategori</label>
+                    <select class="form-select form-select-sm rounded-3" id="fltKategori">
+                        <option value="">Tümü</option>
+                        <option value="Donanım">Donanım</option>
+                        <option value="Yazılım">Yazılım</option>
+                        <option value="Ağ (Network)">Ağ (Network)</option>
+                        <option value="Diğer">Diğer</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold text-secondary small">Öncelik</label>
+                    <select class="form-select form-select-sm rounded-3" id="fltOncelik">
+                        <option value="">Tümü</option>
+                        <option value="Düşük">Düşük</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Acil">Acil</option>
+                        <option value="Kritik">Kritik</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold text-secondary small">Uçuş Ops. Etkisi</label>
+                    <select class="form-select form-select-sm rounded-3" id="fltUcus">
+                        <option value="">Tümü</option>
+                        <option value="true">Evet (Etkiliyor)</option>
+                        <option value="false">Hayır (Etkilemiyor)</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2 mt-3">
+                    <label class="form-label fw-bold text-secondary small">Arıza Tarihi</label>
+                    <input type="date" class="form-control form-control-sm rounded-3" id="fltTarih">
+                </div>
+                <div class="col-md-3 mt-3">
+                    <label class="form-label fw-bold text-secondary small">Durumu</label>
+                    <select class="form-select form-select-sm rounded-3" id="fltDurum">
+                        <option value="">Tümü</option>
+                        <option value="Kişi Onayında">Kişi Onayında</option>
+                        <option value="Tekniker Alınmayı Bekliyor">Tekniker Alınmayı Bekliyor</option>
+                        <option value="Tamir Ediliyor">Tamir Ediliyor</option>
+                        <option value="Firmaya Gönderildi">Firmaya Gönderildi</option>
+                        <option value="İşlem Bitti">İşlem Bitti</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mt-3">
+                    <label class="form-label fw-bold text-secondary small">İlgilenen Tekniker</label>
+                    <select class="form-select form-select-sm rounded-3" id="fltTekniker">
+                        <option value="">Tüm Teknikerler</option>
+                        <option value="Mustafa Aslan">Mustafa Aslan</option>
+                        <option value="Ahmet K.">Ahmet K.</option>
+                        <option value="Yasin E.">Yasin E.</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <button type="button" class="btn btn-secondary btn-sm w-100 fw-bold rounded-3 py-2 shadow-sm" id="btnTemizle">
+                        <i class="bi bi-eraser-fill me-1"></i> Temizle
+                    </button>
+                </div>
+                <div class="col-md-2 mt-3">
+                    <button type="button" class="btn btn-primary btn-sm w-100 fw-bold rounded-3 py-2 shadow-sm" id="btnFiltrele">
+                        <i class="bi bi-funnel-fill me-1"></i> Filtrele
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="ps-3">Arıza No</th>
+                            <th>BİM No</th>
+                            <th>Arıza Tarihi</th>
+                            <th>Bildiren Kişi</th>
+                            <th>İlgilenen Tekniker</th>
+                            <th>Müdahale Süresi</th>
+                            <th>Firma Müd. Süresi</th>
+                            <th>Durumu</th>
+                            <th>Çözüm Süresi</th>
+                            <th class="text-center pe-3">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody id="arizaTabloGövdesi">
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                // İsim Soyisim Maskeleme Algoritması
+                                string maskeliIsim = item.BildirenKisi;
+                                if (!string.IsNullOrEmpty(maskeliIsim))
+                                {
+                                    var isimParcalari = maskeliIsim.Trim().Split(' ');
+                                    if (isimParcalari.Length > 1)
+                                    {
+                                        string ad = string.Join(" ", isimParcalari.Take(isimParcalari.Length - 1));
+                                        string soyadIlkHarf = isimParcalari.Last().Substring(0, 1).ToUpper() + ".";
+                                        maskeliIsim = $"{ad} {soyadIlkHarf}";
+                                    }
+                                }
+
+                                var sonIslem = item.IslemGecmisleri?.OrderByDescending(i => i.IslemTarihi).FirstOrDefault();
+                                string aktifTekniker = sonIslem != null ? sonIslem.TeknikerAdSoyad : "";
+
+                                DateTime? islemBitisTarihi = null;
+
+                                if (item.Durum == "İşlem Bitti" && item.CozumTarihi.HasValue)
+                                {
+                                    islemBitisTarihi = item.CozumTarihi;
+                                }
+                                else if (item.Durum == "Kişi Onayında")
+                                {
+                                    islemBitisTarihi = sonIslem?.IslemTarihi ?? DateTime.Now;
+                                }
+
+                                string statikMudahaleSuresi = "-";
+                                string statikCozumSuresi = "-";
+
+                                if (islemBitisTarihi.HasValue)
+                                {
+                                    TimeSpan ts = islemBitisTarihi.Value - item.BildirimTarihi;
+                                    if (ts.TotalSeconds < 0) ts = TimeSpan.Zero;
+                                    statikMudahaleSuresi = $"{ts.Days}g {ts.Hours}s {ts.Minutes}d {ts.Seconds}sn";
+                                    statikCozumSuresi = statikMudahaleSuresi;
+                                }
+
+                                // JS'DE FİLTRELEME
+                                <tr class="ariza-satir"
+                                    data-id="@item.Id"
+                                    data-bim="@(item.BimKodu ?? "")"
+                                    data-marka="@(item.UrunMarkaModel ?? "")"
+                                    data-kategori="@(item.Kategori ?? "")"
+                                    data-oncelik="@(item.OncelikDerecesi ?? "")"
+                                    data-ucus="@item.UcusOperasyonunuEtkiliyorMu.ToString().ToLower()"
+                                    data-tarih="@item.BildirimTarihi.ToString("yyyy-MM-dd")"
+                                    data-durum="@(item.Durum ?? "")"
+                                    data-tekniker="@aktifTekniker">
+
+                                    <td class="ps-3 fw-bold text-primary">@item.Id</td>
+                                    <td class="fw-bold text-dark">@item.BimKodu</td>
+                                    <td>@item.BildirimTarihi.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>@maskeliIsim</td>
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(aktifTekniker))
+                                        {
+                                            <span class="fw-semibold text-dark">@aktifTekniker</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (item.Durum == "Kişi Onayında" || item.Durum == "İşlem Bitti")
+                                        {
+                                            <span class="badge bg-secondary px-2 py-1 shadow-sm">
+                                                <i class="bi bi-stopwatch me-1"></i>@statikMudahaleSuresi
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-primary px-2 py-1 canli-sayac shadow-sm" data-baslangic="@item.BildirimTarihi.ToString("yyyy-MM-ddTHH:mm:ss")">
+                                                <i class="bi bi-stopwatch me-1"></i>Hesaplanıyor...
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (item.Durum == "Firmaya Gönderildi" && item.FirmaGonderimTarihi.HasValue)
+                                        {
+                                            <span class="badge bg-danger px-2 py-1 firma-sayac shadow-sm" data-baslangic="@item.FirmaGonderimTarihi.Value.ToString("yyyy-MM-ddTHH:mm:ss")">
+                                                Hesaplanıyor...
+                                            </span>
+                                        }
+                                        else if ((item.Durum == "İşlem Bitti" || item.Durum == "Kişi Onayında") && item.FirmaGonderimTarihi.HasValue && islemBitisTarihi.HasValue)
+                                        {
+                                            TimeSpan firmaTs = islemBitisTarihi.Value - item.FirmaGonderimTarihi.Value;
+                                            if (firmaTs.TotalSeconds < 0) firmaTs = TimeSpan.Zero;
+                                            <span class="badge bg-danger px-2 py-1 shadow-sm">
+                                                @($"{firmaTs.Days}g {firmaTs.Hours}s {firmaTs.Minutes}d {firmaTs.Seconds}sn")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-dark border px-2 py-1">-</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-warning text-dark px-2 py-1 shadow-sm">@item.Durum</span>
+                                    </td>
+
+                                    <td class="fw-bold text-success">
+                                        @if (item.Durum == "Kişi Onayında" || item.Durum == "İşlem Bitti")
+                                        {
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            @statikCozumSuresi
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+
+                                    <td class="text-center pe-3">
+                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#detayModal-@item.Id">
+                                            Yönet
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <div class="modal fade text-start" id="detayModal-@item.Id" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                                        <div class="modal-content border-0 shadow-lg">
+                                            <div class="modal-header bg-dark text-white">
+                                                <h5 class="modal-title fw-bold"><i class="bi bi-tools me-2"></i>Arıza Yönetimi (@item.Id - @item.BimKodu)</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                                            </div>
+                                            <div class="modal-body p-4 bg-light">
+
+                                                <div class="card border-0 shadow-sm mb-4">
+                                                    <div class="card-body">
+                                                        <h6 class="fw-bold text-primary border-bottom pb-2 mb-3">Arıza Detayları</h6>
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-2"><strong>Bildiren:</strong> @item.BildirenKisi</div>
+                                                            <div class="col-md-6 mb-2"><strong>Dahili No:</strong> @(string.IsNullOrEmpty(item.DahiliNo) ? "Belirtilmemiş" : item.DahiliNo)</div>
+                                                            <div class="col-md-6 mb-2"><strong>Tarih:</strong> @item.BildirimTarihi.ToString("dd.MM.yyyy HH:mm")</div>
+                                                            <div class="col-md-6 mb-2"><strong>Konum / Oda:</strong> @item.OdaNo</div>
+                                                            <div class="col-md-6 mb-2"><strong>Başlık:</strong> @item.Baslik</div>
+                                                            <div class="col-md-6 mb-2"><strong>Kategori:</strong> @item.Kategori</div>
+                                                            <div class="col-md-6 mb-2"><strong>Marka/Model:</strong> @item.UrunMarkaModel</div>
+                                                            <div class="col-md-6 mb-2">
+                                                                <strong>Öncelik Derecesi:</strong>
+                                                                @if (item.OncelikDerecesi == "Acil" || item.OncelikDerecesi == "Kritik")
+                                                                {
+                                                                    <span class="badge bg-danger">@item.OncelikDerecesi</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="badge bg-info">@item.OncelikDerecesi</span>
+                                                                }
+                                                            </div>
+                                                            <div class="col-md-6 mb-2"><strong>Mevcut Durum:</strong> <span class="badge bg-warning text-dark">@item.Durum</span></div>
+                                                            <div class="col-md-6 mb-2">
+                                                                <strong>Uçuş Operasyonuna Etkisi:</strong>
+                                                                @if (item.UcusOperasyonunuEtkiliyorMu)
+                                                                {
+                                                                    <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Evet</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="badge bg-secondary">Hayır</span>
+                                                                }
+                                                            </div>
+                                                            <div class="col-md-12 mt-3">
+                                                                <strong>Açıklama:</strong>
+                                                                <div class="p-3 bg-white border rounded-3 mt-1 text-muted">@(string.IsNullOrEmpty(item.Aciklama) ? "Açıklama girilmemiş." : item.Aciklama)</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card border-0 shadow-sm">
+                                                    <div class="card-body">
+                                                        <h6 class="fw-bold text-primary border-bottom pb-2 mb-3"><i class="bi bi-clock-history me-1"></i>Tekniker İşlem Geçmişi</h6>
+                                                        @if (item.IslemGecmisleri != null && item.IslemGecmisleri.Any())
+                                                        {
+                                                            <div class="list-group list-group-flush border rounded-3">
+                                                                @foreach (var islem in item.IslemGecmisleri.OrderByDescending(i => i.IslemTarihi))
+                                                                {
+                                                                    <div class="list-group-item bg-white d-flex justify-content-between align-items-start py-3">
+                                                                        <div class="ms-2 me-auto">
+                                                                            <div class="fw-bold text-dark"><i class="bi bi-person-gear me-1"></i> @islem.TeknikerAdSoyad</div>
+                                                                            <span class="text-muted small">@islem.IslemAciklamasi</span>
+                                                                        </div>
+                                                                        <span class="badge bg-light text-secondary border rounded-pill">@islem.IslemTarihi.ToString("dd.MM.yyyy HH:mm")</span>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="alert alert-secondary text-center small mb-0">
+                                                                <i class="bi bi-info-circle me-1"></i> Henüz bu arızaya teknik bir müdahale kaydı girilmemiş.
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <div class="card border-0 shadow-sm mt-3 d-none" id="islemForm-@item.Id">
+                                                    <div class="card-body bg-white border border-primary border-opacity-50 rounded-3">
+                                                        <h6 class="fw-bold text-primary border-bottom pb-2 mb-3"><i class="bi bi-plus-circle me-1"></i>Yeni Müdahale / İşlem Ekle</h6>
+                                                        <form asp-action="YeniIslemEkle" asp-controller="Arizalar" method="post">
+                                                            <input type="hidden" name="ArizaId" value="@item.Id" />
+                                                            <div class="row g-3">
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label fw-bold small">İlgilenen Tekniker</label>
+                                                                    <select class="form-select form-select-sm" name="TeknikerAdSoyad" required>
+                                                                        <option value="">Tekniker Seçin...</option>
+                                                                        <option value="Mustafa Aslan">Mustafa Aslan</option>
+                                                                        <option value="Ahmet K.">Ahmet K.</option>
+                                                                        <option value="Yasin E.">Yasin E.</option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label fw-bold small">Arıza Durumunu Güncelle</label>
+                                                                    <select class="form-select form-select-sm" name="YeniDurum" id="yeniDurum-@item.Id" onchange="checkDurum(@item.Id)" required>
+                                                                        <option value="@item.Durum" selected>Mevcut Durumu Koru (@item.Durum)</option>
+                                                                        <option value="Kişi Onayında">Kişi Onayında</option>
+                                                                        <option value="Tekniker Alınmayı Bekliyor">Tekniker Alınmayı Bekliyor</option>
+                                                                        <option value="Tamir Ediliyor">Tamir Ediliyor</option>
+                                                                        <option value="Firmaya Gönderildi">Firmaya Gönderildi</option>
+                                                                        <option value="İşlem Bitti">İşlem Bitti</option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-12 d-none" id="firmaDetayAlani-@item.Id">
+                                                                    <div class="p-3 mb-2 rounded-3" style="background-color: #fff3cd; border: 1px solid #ffe69c;">
+                                                                        <h6 class="fw-bold text-danger border-bottom border-warning pb-2 mb-3">
+                                                                            <i class="bi bi-truck me-1"></i>Firmaya Çağrı Açılış Detayları
+                                                                        </h6>
+                                                                        <div class="row g-3">
+                                                                            <div class="col-md-6">
+                                                                                <label class="form-label small fw-bold text-muted">Demirbaş / BİM No</label>
+                                                                                <input type="text" class="form-control form-control-sm bg-light" name="FirmaBimNo" value="@item.BimKodu" readonly>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label class="form-label small fw-bold text-muted">Ürün Marka/Model</label>
+                                                                                <input type="text" class="form-control form-control-sm bg-light" name="FirmaUrunBilgisi" value="@item.UrunMarkaModel" readonly>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label class="form-label small fw-bold">Yönlendirilen Firma <span class="text-danger">*</span></label>
+                                                                                <input type="text" class="form-control form-control-sm" name="YonlendirilenFirma" placeholder="Örn: Dell Yetkili Servisi">
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label class="form-label small fw-bold">Çağrı Aciliyeti</label>
+                                                                                <select class="form-select form-select-sm" name="FirmaAciliyeti">
+                                                                                    <option value="Normal">Normal</option>
+                                                                                    <option value="Acil">Acil</option>
+                                                                                    <option value="Kritik">Kritik</option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-12">
+                                                                    <label class="form-label fw-bold small">Kullanılan Yedek Parça / Malzeme (Opsiyonel)</label>
+                                                                    <input type="text" class="form-control form-control-sm" name="KullanilanMalzeme" placeholder="Örn: 8GB DDR4 RAM, 1m CAT6 Kablo, HDMI Dönüştürücü...">
+                                                                </div>
+
+                                                                <div class="col-12">
+                                                                    <label class="form-label fw-bold small">Yapılan İşlem / Açıklama <span class="text-danger">*</span></label>
+                                                                    <textarea class="form-control form-control-sm" name="IslemAciklamasi" rows="3" required placeholder="Arızaya ne müdahale yapıldığını detaylıca yazınız..."></textarea>
+                                                                </div>
+                                                                <div class="col-12 text-end mt-3">
+                                                                    <button type="button" class="btn btn-sm btn-light border me-2" onclick="toggleIslemForm(@item.Id)">İptal</button>
+                                                                    <button type="submit" class="btn btn-sm btn-success px-4"><i class="bi bi-save me-1"></i>Kaydet ve Güncelle</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer bg-white">
+                                                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Kapat</button>
+                                                <button type="button" class="btn btn-primary rounded-pill px-4" onclick="toggleIslemForm(@item.Id)">Yeni İşlem Ekle</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="10" class="text-center text-muted py-4">
+                                    <i class="bi bi-info-circle me-1"></i> Sisteme kayıtlı, sizin yetkinizde bir arıza kaydı bulunmamaktadır.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const pageTitle = document.getElementById("pageTitle");
+        const toggleBtn = document.getElementById("toggleViewBtn");
+        const filterSection = document.getElementById("filterSection");
+        const headerRow = document.getElementById("headerRow");
+        const yoneticiReturnDiv = document.getElementById("yoneticiReturnDiv");
+
+        const mainElement = document.querySelector('main');
+        const layoutContainer = mainElement ? mainElement.closest('.container') : null;
+
+        if (layoutContainer) {
+            layoutContainer.classList.replace('container', 'container-fluid');
+        }
+
+        let isListViewActive = localStorage.getItem("isListView") === "true";
+
+        function setViewMode(isList) {
+            if (isList) {
+                filterSection.style.display = "none";
+                pageTitle.style.display = "none";
+                if(yoneticiReturnDiv) yoneticiReturnDiv.style.display = "none";
+
+                headerRow.classList.remove("mb-3");
+                headerRow.classList.add("mb-1");
+
+                toggleBtn.innerHTML = '<i class="bi bi-fullscreen-exit me-1"></i> Filtreleri Göster';
+                toggleBtn.className = "btn btn-sm btn-dark rounded-pill fw-bold shadow-sm";
+            } else {
+                filterSection.style.display = "block";
+                pageTitle.style.display = "block";
+                if(yoneticiReturnDiv) yoneticiReturnDiv.style.display = "block";
+
+                headerRow.classList.remove("mb-1");
+                headerRow.classList.add("mb-3");
+
+                toggleBtn.innerHTML = '<i class="bi bi-arrows-fullscreen me-1"></i> Sadece Liste';
+                toggleBtn.className = "btn btn-outline-dark rounded-pill fw-bold shadow-sm";
+            }
+        }
+
+        setViewMode(isListViewActive);
+
+        toggleBtn.addEventListener("click", function () {
+            isListViewActive = !isListViewActive;
+            localStorage.setItem("isListView", isListViewActive);
+            setViewMode(isListViewActive);
+        });
+
+        function updateCounters() {
+            document.querySelectorAll('.canli-sayac').forEach(function(el) {
+                let baslangic = new Date(el.getAttribute('data-baslangic'));
+                let suAn = new Date();
+                let farkMs = suAn - baslangic;
+                if (farkMs < 0) { farkMs = 0; }
+                let gun = Math.floor(farkMs / (1000 * 60 * 60 * 24));
+                let saat = Math.floor((farkMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let dakika = Math.floor((farkMs % (1000 * 60 * 60)) / (1000 * 60));
+                let saniye = Math.floor((farkMs % (1000 * 60)) / 1000);
+                el.innerHTML = `<i class="bi bi-stopwatch me-1"></i>${gun}g ${saat}s ${dakika}d ${saniye}sn`;
+            });
+
+            document.querySelectorAll('.firma-sayac').forEach(function(el) {
+                let baslangic = new Date(el.getAttribute('data-baslangic'));
+                let suAn = new Date();
+                let farkMs = suAn - baslangic;
+                if (farkMs < 0) { farkMs = 0; }
+                let gun = Math.floor(farkMs / (1000 * 60 * 60 * 24));
+                let saat = Math.floor((farkMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let dakika = Math.floor((farkMs % (1000 * 60 * 60)) / (1000 * 60));
+                let saniye = Math.floor((farkMs % (1000 * 60)) / 1000);
+                el.innerHTML = `${gun}g ${saat}s ${dakika}d ${saniye}sn`;
+            });
+        }
+        setInterval(updateCounters, 1000);
+        updateCounters();
+
+        setInterval(function () {
+            let isModalOpen = document.querySelector('.modal.show');
+            if (!isModalOpen) {
+                location.reload();
+            }
+        }, 30000);
+
+        const btnFiltrele = document.getElementById("btnFiltrele");
+        const btnTemizle = document.getElementById("btnTemizle");
+
+        btnFiltrele.addEventListener("click", function () {
+            let fBim = document.getElementById("fltBim").value.toLowerCase();
+            let fId = document.getElementById("fltId").value;
+            let fMarka = document.getElementById("fltMarka").value.toLowerCase();
+            let fKategori = document.getElementById("fltKategori").value;
+            let fOncelik = document.getElementById("fltOncelik").value;
+            let fUcus = document.getElementById("fltUcus").value;
+            let fTarih = document.getElementById("fltTarih").value;
+            let fDurum = document.getElementById("fltDurum").value;
+            let fTekniker = document.getElementById("fltTekniker").value;
+
+            document.querySelectorAll(".ariza-satir").forEach(row => {
+                let rBim = row.getAttribute("data-bim").toLowerCase();
+                let rId = row.getAttribute("data-id");
+                let rMarka = row.getAttribute("data-marka").toLowerCase();
+                let rKategori = row.getAttribute("data-kategori");
+                let rOncelik = row.getAttribute("data-oncelik");
+                let rUcus = row.getAttribute("data-ucus");
+                let rTarih = row.getAttribute("data-tarih");
+                let rDurum = row.getAttribute("data-durum");
+                let rTekniker = row.getAttribute("data-tekniker");
+
+                let gosterilsinMi = true;
+
+                if (fBim && !rBim.includes(fBim)) gosterilsinMi = false;
+                if (fId && rId !== fId) gosterilsinMi = false;
+                if (fMarka && !rMarka.includes(fMarka)) gosterilsinMi = false;
+                if (fKategori && rKategori !== fKategori) gosterilsinMi = false;
+                if (fOncelik && rOncelik !== fOncelik) gosterilsinMi = false;
+                if (fUcus && rUcus !== fUcus) gosterilsinMi = false;
+                if (fTarih && rTarih !== fTarih) gosterilsinMi = false;
+                if (fDurum && rDurum !== fDurum) gosterilsinMi = false;
+                if (fTekniker && rTekniker !== fTekniker) gosterilsinMi = false;
+
+                row.style.display = gosterilsinMi ? "" : "none";
+            });
+        });
+
+        btnTemizle.addEventListener("click", function () {
+            document.getElementById("filterForm").reset();
+            document.querySelectorAll(".ariza-satir").forEach(row => {
+                row.style.display = "";
+            });
+        });
+    });
+
+    function toggleIslemForm(id) {
+        const formDiv = document.getElementById('islemForm-' + id);
+        if (formDiv.classList.contains('d-none')) {
+            formDiv.classList.remove('d-none');
+            formDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        } else {
+            formDiv.classList.add('d-none');
+        }
+    }
+
+    function checkDurum(id) {
+        const durumSelect = document.getElementById('yeniDurum-' + id);
+        const firmaAlani = document.getElementById('firmaDetayAlani-' + id);
+
+        if (durumSelect.value === 'Firmaya Gönderildi') {
+            firmaAlani.classList.remove('d-none');
+            firmaAlani.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            firmaAlani.classList.add('d-none');
+        }
+    }
+</script>

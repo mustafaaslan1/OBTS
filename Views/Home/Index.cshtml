@@ -1,0 +1,65 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<div class="container text-center py-5">
+    <img src="~/images/dhmi-logo.png" alt="DHMİ" style="height: 120px;" class="mb-4 shadow-sm rounded-circle p-2 bg-white border" onerror="this.src='https://via.placeholder.com/120?text=DHMI'" />
+    <h1 class="display-4 fw-bold text-dark mb-3">OBTS Yönetim Paneline Hoş Geldiniz</h1>
+    <p class="lead text-muted mb-5">Devlet Hava Meydanları İşletmesi - Olay ve Bakım Takip Sistemi Merkezi Kontrol Ekranı</p>
+
+    <hr class="w-50 mx-auto mb-5 text-muted" />
+
+    <div class="row g-4 justify-content-center mt-2">
+        @if (!SignInManager.IsSignedIn(User))
+        {
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm custom-hover">
+                    <div class="card-body p-4 d-flex flex-column justify-content-center">
+                        <div class="text-primary mb-3">
+                            <i class="bi bi-box-arrow-in-right" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="card-title fw-bold">Sisteme Giriş Yap</h4>
+                        <p class="card-text text-muted mb-4">Mevcut personel hesabınızla OBTS yönetim paneline erişim sağlayın.</p>
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary rounded-pill px-4 mt-auto fw-bold shadow-sm">Giriş Yap</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm custom-hover">
+                    <div class="card-body p-4 d-flex flex-column justify-content-center">
+                        <div class="text-secondary mb-3">
+                            <i class="bi bi-person-plus-fill" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="card-title fw-bold">Yeni Personel Kaydı</h4>
+                        <p class="card-text text-muted mb-4">Sisteme ilk defa giriş yapacaksanız buradan kayıt oluşturun (Yönetici onayı gerektirir).</p>
+                        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-secondary rounded-pill px-4 mt-auto fw-bold">Kayıt Ol</a>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-12 mt-4">
+                <div class="alert alert-primary border-0 shadow-sm d-inline-block px-5 py-3 rounded-pill">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    Sisteme giriş yaptınız. Operasyonel işlemleriniz için üst menüdeki <strong>Hesabım</strong> sekmesini kullanabilirsiniz.
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .custom-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .custom-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+        }
+</style>

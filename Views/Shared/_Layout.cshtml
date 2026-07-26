@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DHMİ OBTS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/OBTS_Web.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark shadow-sm mb-2 py-1" style="background-color: #004c8c;">
+            <div class="container-fluid px-4">
+
+                <span class="navbar-brand fw-bold text-white d-flex align-items-center fs-5 mb-0 user-select-none">
+                    <img src="~/images/dhmi-logo.png" alt="DHMİ Logo" style="height: 35px;" class="me-3 bg-white rounded-circle p-1 shadow-sm" onerror="this.src='https://via.placeholder.com/45?text=DHMI'" />
+                    DHMİ OBTS
+                </span>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Menüyü Aç">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between align-items-center">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item ms-auto d-flex align-items-center text-white fw-bold fs-6 me-4" id="liveClock">
+                            <i class="bi bi-calendar-event me-2"></i> <span id="timeDisplay">Yükleniyor...</span>
+                        </li>
+                    </ul>
+
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted bg-white mt-auto">
+        <div class="container text-center py-3">
+            &copy; 2026 - DHMİ Olay ve Bakım Takip Sistemi
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        function updateClock() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        document.getElementById('timeDisplay').innerText = now.toLocaleDateString('tr-TR', options);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

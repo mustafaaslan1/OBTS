@@ -1,0 +1,45 @@
+@page
+@model EmailModel
+@{
+    ViewData["Title"] = "E-Posta Yönetimi";
+    ViewData["ActivePage"] = ManageNavPages.Email;
+}
+
+<h5 class="mb-4 text-secondary fw-semibold">@ViewData["Title"]</h5>
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="row">
+    <div class="col-md-8 col-lg-7">
+        <form id="email-form" method="post">
+            <div asp-validation-summary="All" class="text-danger mb-3" role="alert"></div>
+            @if (Model.IsEmailConfirmed)
+            {
+                <div class="form-floating mb-3 input-group shadow-sm">
+                    <input asp-for="Email" class="form-control" placeholder="E-posta adresiniz" disabled />
+                    <div class="input-group-append">
+                        <span class="h-100 input-group-text text-success fw-bold"><i class="bi bi-check-circle-fill"></i> ✓</span>
+                    </div>
+                    <label asp-for="Email" class="form-label">Mevcut E-Posta</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-floating mb-3 shadow-sm">
+                    <input asp-for="Email" class="form-control" placeholder="E-posta adresiniz" disabled />
+                    <label asp-for="Email" class="form-label">Mevcut E-Posta (Onaysız)</label>
+                    <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-link px-0 text-decoration-none small">Doğrulama e-postası gönder</button>
+                </div>
+            }
+            <div class="form-floating mb-4 shadow-sm">
+                <input asp-for="Input.NewEmail" class="form-control" autocomplete="email" aria-required="true" placeholder="Yeni e-posta adresiniz" />
+                <label asp-for="Input.NewEmail" class="form-label">Yeni E-Posta</label>
+                <span asp-validation-for="Input.NewEmail" class="text-danger small"></span>
+            </div>
+            <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="w-100 btn btn-lg btn-primary shadow-sm fw-semibold">E-Postayı Güncelle</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

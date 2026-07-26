@@ -1,0 +1,177 @@
+﻿@model OBTS_Web.Models.KullaniciDetayViewModel
+
+@{
+    ViewData["Title"] = "Kullanıcı Detayları";
+}
+
+<div class="container-fluid mt-4 mb-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-dark"><i class="bi bi-person-lines-fill text-primary me-2"></i>Personel Yönetimi</h3>
+        <a href="@Url.Action("Index", "KullaniciYonetimi")" class="btn btn-outline-secondary rounded-pill shadow-sm px-4">
+            <i class="bi bi-arrow-left me-1"></i> Listeye Dön
+        </a>
+    </div>
+
+    @if (TempData["OTP_Sifre"] != null)
+    {
+        <div class="card border-success border-2 shadow-sm mb-4 rounded-4 bg-success bg-opacity-10">
+            <div class="card-body text-center p-5">
+                <h4 class="text-success fw-bold mb-3"><i class="bi bi-key-fill me-2"></i>Geçici Şifre Oluşturuldu!</h4>
+                <p class="text-muted mb-4">Personelinizin sisteme giriş yapabilmesi için aşağıdaki tek kullanımlık şifreyi kendisine iletiniz. İlk girişinde kalıcı bir şifre belirlemesi istenecektir.</p>
+                <div class="display-3 fw-bolder text-dark letter-spacing-custom bg-white d-inline-block px-5 py-3 rounded-4 shadow-sm border">
+                    @TempData["OTP_Sifre"]
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-bottom p-4">
+                    <h5 class="m-0 fw-bold text-dark"><i class="bi bi-pencil-square text-primary me-2"></i>Temel Bilgiler</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="ProfilGuncelle" method="post">
+                        <input type="hidden" asp-for="UserId" />
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-bold text-secondary small"></label>
+                                <input asp-for="Email" class="form-control bg-light" readonly />
+                                <div class="form-text">E-posta adresi sistem kimliğidir, değiştirilemez.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="AdSoyad" class="form-label fw-bold text-secondary small"></label>
+                                <input asp-for="AdSoyad" class="form-control" placeholder="Örn: Mustafa Aslan" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="DahiliHat" class="form-label fw-bold text-secondary small"></label>
+                                <input asp-for="DahiliHat" class="form-control" placeholder="Örn: 1453" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Rol" class="form-label fw-bold text-secondary small"></label>
+                                <select asp-for="Rol" class="form-select">
+                                    <option value="Personel">Personel (Sadece Bildirim)</option>
+                                    <option value="Tekniker">Tekniker (Müdahale Edebilir)</option>
+                                    <option value="Yonetici">Yönetici (Tam Yetki)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <div class="form-check form-switch fs-5">
+                                    <input class="form-check-input" type="checkbox" asp-for="IsApproved" id="onaySwitch">
+                                    <label class="form-check-label fw-medium ms-2" for="onaySwitch">Sisteme Giriş Yetkisi (Onay)</label>
+                                </div>
+                                <div class="form-text ms-5">Bu onay kaldırıldığında personel sisteme giriş yapamaz.</div>
+                            </div>
+                        </div>
+
+                        <div class="text-end mt-5">
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                                <i class="bi bi-save-fill me-1"></i> Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-light">
+                <div class="card-header bg-transparent border-bottom p-4">
+                    <h5 class="m-0 fw-bold text-danger"><i class="bi bi-shield-lock-fill me-2"></i>Güvenlik İşlemleri</h5>
+                </div>
+                <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
+                    <div class="mb-4">
+                        <i class="bi bi-incognito display-1 text-secondary opacity-50"></i>
+                    </div>
+                    <h6 class="fw-bold mb-3">Şifre Sıfırlama (OTP)</h6>
+                    <p class="text-muted small mb-4">
+                        Personel şifresini unuttuğunda veya güvenlik ihlali şüphesi durumunda, sisteme erişimini sağlamak için tek kullanımlık geçici bir şifre (OTP) oluşturabilirsiniz.
+                    </p>
+
+                    <form id="otpUretForm" asp-action="GeciciSifreUret" method="post">
+                        <input type="hidden" name="userId" value="@Model.UserId" />
+                        <button type="button" class="btn btn-danger rounded-pill px-4 py-2 fw-bold shadow w-100" data-bs-toggle="modal" data-bs-target="#otpOnayModal">
+                            <i class="bi bi-lightning-charge-fill me-1"></i> Geçici Şifre Üret
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="otpOnayModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-octagon-fill me-2"></i>Önemli Güvenlik Uyarısı</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="display-1 text-danger opacity-25 mb-3"><i class="bi bi-shield-x"></i></div>
+                <h5 class="fw-bold text-dark mb-2">Bu personel için yeni bir geçici şifre oluşturmak istediğinize emin misiniz?</h5>
+                <p class="text-muted small mb-0">Personelin eski şifresi anında iptal edilecek ve mevcut oturumlarından çıkış yaptırılacaktır.</p>
+            </div>
+            <div class="modal-footer bg-light justify-content-center">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">İptal Et</button>
+                <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold" onclick="document.getElementById('otpUretForm').submit();">
+                    Evet, Şifre Üret
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="sistemMesajiModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header @(TempData["HataMesaji"] != null ? "bg-danger" : "bg-success") text-white">
+                <h5 class="modal-title fw-bold">
+                    @if (TempData["HataMesaji"] != null)
+                    {
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span>Sistem Uyarısı</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-check-circle-fill me-2"></i> <span>İşlem Başarılı</span>
+                    }
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <p class="fs-5 mb-0 text-dark">@(TempData["HataMesaji"] ?? TempData["BasariMesaji"])</p>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .letter-spacing-custom {
+        letter-spacing: 0.5rem;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var hataVarMi = '@(TempData["HataMesaji"] != null ? "true" : "false")' === 'true';
+            var basariVarMi = '@(TempData["BasariMesaji"] != null ? "true" : "false")' === 'true';
+            var otpUretildiMi = '@(TempData["OTP_Sifre"] != null ? "true" : "false")' === 'true';
+
+            if (hataVarMi || (basariVarMi && !otpUretildiMi)) {
+                var mesajModal = new bootstrap.Modal(document.getElementById('sistemMesajiModal'));
+                mesajModal.show();
+            }
+        });
+    </script>
+}

@@ -1,0 +1,76 @@
+@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Yeni Kullanıcı Kaydı";
+}
+<style>
+    body {
+        background-color: #f4f6f9;
+    }
+
+    .register-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+
+    .register-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+</style>
+
+<div class="register-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card register-card border-0 bg-white p-5">
+                    <div class="text-center mb-4">
+                        <img src="~/images/dhmi-logo.png" alt="DHMİ Logo" style="max-height: 80px;" class="mb-3" onerror="this.src='https://via.placeholder.com/150x80?text=DHMI+Logo'" />
+                        <h3 class="fw-bold text-dark">Sisteme Kayıt Ol</h3>
+                        <p class="text-muted">OBTS Yeni Personel Kaydı</p>
+                    </div>
+
+                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger rounded-3 small">
+                                <div asp-validation-summary="ModelOnly" role="alert"></div>
+                            </div>
+                        }
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Email" class="form-control rounded-pill px-4" autocomplete="username" aria-required="true" placeholder="ornek@dhmi.gov.tr" />
+                            <label asp-for="Input.Email" class="ms-2">E-Posta Adresi</label>
+                            <span asp-validation-for="Input.Email" class="text-danger ps-3 small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Password" class="form-control rounded-pill px-4" autocomplete="new-password" aria-required="true" placeholder="Şifre" />
+                            <label asp-for="Input.Password" class="ms-2">Şifre</label>
+                            <span asp-validation-for="Input.Password" class="text-danger ps-3 small"></span>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input asp-for="Input.ConfirmPassword" class="form-control rounded-pill px-4" autocomplete="new-password" aria-required="true" placeholder="Şifreyi Onayla" />
+                            <label asp-for="Input.ConfirmPassword" class="ms-2">Şifreyi Tekrar Girin</label>
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger ps-3 small"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm">Kayıt Ol</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

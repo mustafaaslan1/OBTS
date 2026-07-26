@@ -1,0 +1,104 @@
+@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Sisteme Giriş";
+}
+
+<style>
+    body {
+        background-color: #f4f6f9;
+    }
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .login-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    .login-image {
+        background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1000&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+    }
+</style>
+
+<div class="login-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card login-card border-0">
+                    <div class="row g-0">
+                        <div class="col-md-6 login-image d-none d-md-block">
+                        </div>
+
+                        <div class="col-md-6 bg-white p-5">
+                            <div class="text-center mb-4">
+                                <img src="~/images/dhmi-logo.png" alt="DHMİ Logo" style="max-height: 80px;" class="mb-3" onerror="this.src='https://via.placeholder.com/150x80?text=DHMI+Logo'" />
+                                <h3 class="fw-bold text-dark">OBTS Giriş</h3>
+                                <p class="text-muted">Olay ve Bakım Takip Sistemi</p>
+                            </div>
+
+                            <form id="account" method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Input.Email" class="form-control rounded-pill px-4" autocomplete="username" aria-required="true" placeholder="ornek@dhmi.gov.tr" />
+                                    <label asp-for="Input.Email" class="ms-2">E-Posta Adresi</label>
+                                    <span asp-validation-for="Input.Email" class="text-danger ps-3 small"></span>
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Input.Password" class="form-control rounded-pill px-4" autocomplete="current-password" aria-required="true" placeholder="Şifre" />
+                                    <label asp-for="Input.Password" class="ms-2">Şifre</label>
+                                    <span asp-validation-for="Input.Password" class="text-danger ps-3 small"></span>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" asp-for="Input.RememberMe" id="rememberMe" />
+                                        <label class="form-check-label text-muted" for="rememberMe">
+                                            Beni Hatırla
+                                        </label>
+                                    </div>
+                                    <a href="#" class="text-decoration-none small text-primary" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Şifremi Unuttum?</a>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button id="login-submit" type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm">Giriş Yap</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-warning text-dark border-0">
+                <h5 class="modal-title fw-bold" id="forgotPasswordModalLabel"><i class="bi bi-shield-lock-fill me-2"></i>Güvenlik Uyarısı</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <i class="bi bi-person-badge text-muted mb-3" style="font-size: 4rem;"></i>
+                <h5 class="fw-bold">Şifre Sıfırlama Yetkisi</h5>
+                <p class="text-muted mb-0">Kurumsal bilgi güvenliği politikaları gereği, sistem şifrenizi bu ekran üzerinden sıfırlayamazsınız. Lütfen yeni şifre talebi için <strong>Sistem Teknikeri (Bilgi Teknolojileri Müdürlüğü)</strong> ile yüz yüze iletişime geçiniz.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Anladım</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,170 @@
+﻿@model IEnumerable<OBTS_Web.Models.Ariza>
+
+@{
+    ViewData["Title"] = "Personel Paneli";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1"><i class="bi bi-person-workspace text-primary me-2"></i>Personel Arıza Takip Paneli</h2>
+            <p class="text-muted mb-0">Sisteme bildirdiğiniz tüm arızaların güncel durumlarını buradan takip edebilirsiniz.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> Yeni Arıza Bildir
+        </a>
+    </div>
+
+    @if (TempData["BasariMesaji"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["BasariMesaji"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mt-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary">
+                        <tr>
+                            <th class="ps-4">Arıza No</th>
+                            <th>BİM No</th>
+                            <th>Başlık</th>
+                            <th>Bildirim Tarihi</th>
+                            <th>Güncel Durum</th>
+                            <th class="text-center pe-4">İşlemler / Onay</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-primary">@item.Id</td>
+                                    <td class="fw-medium">@item.BimKodu</td>
+                                    <td>
+                                        <span class="d-inline-block text-truncate" style="max-width: 200px;" title="@item.Baslik">
+                                            @item.Baslik
+                                        </span>
+                                    </td>
+                                    <td>@item.BildirimTarihi.ToString("dd.MM.yyyy HH:mm")</td>
+
+                                    <td>
+                                        @if (item.Durum == "Tekniker Alınmayı Bekliyor")
+                                        {
+                                            <span class="badge bg-secondary px-3 py-2 rounded-pill shadow-sm">@item.Durum</span>
+                                        }
+                                        else if (item.Durum == "Tamir Ediliyor")
+                                        {
+                                            <span class="badge bg-info text-dark px-3 py-2 rounded-pill shadow-sm"><i class="bi bi-tools me-1"></i> @item.Durum</span>
+                                        }
+                                        else if (item.Durum == "Firmaya Gönderildi")
+                                        {
+                                            <span class="badge bg-danger px-3 py-2 rounded-pill shadow-sm"><i class="bi bi-truck me-1"></i> @item.Durum</span>
+                                        }
+                                        else if (item.Durum == "Kişi Onayında")
+                                        {
+                                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm"><i class="bi bi-hourglass-split me-1"></i> @item.Durum</span>
+                                        }
+                                        else if (item.Durum == "İşlem Bitti")
+                                        {
+                                            <span class="badge bg-success px-3 py-2 rounded-pill shadow-sm"><i class="bi bi-check2-all me-1"></i> @item.Durum</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">@item.Durum</span>
+                                        }
+                                    </td>
+
+                                    <td class="text-center pe-4">
+                                        @if (item.Durum == "Kişi Onayında")
+                                        {
+                                            <button type="button" class="btn btn-success btn-sm rounded-pill fw-bold shadow-sm px-3 animation-pulse" data-bs-toggle="modal" data-bs-target="#onayModal-@item.Id">
+                                                <i class="bi bi-check-circle-fill me-1"></i> Teslim Aldım / Onayla
+                                            </button>
+
+                                            <div class="modal fade" id="onayModal-@item.Id" tabindex="-1" aria-labelledby="onayModalLabel-@item.Id" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+
+                                                        <div class="modal-header bg-success text-white">
+                                                            <h5 class="modal-title" id="onayModalLabel-@item.Id">
+                                                                <i class="bi bi-check-circle-fill me-2"></i>Teslim Onayı
+                                                            </h5>
+                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                                                        </div>
+
+                                                        <div class="modal-body text-start">
+                                                            <p class="mb-1 text-dark"><strong>@item.Id</strong> numaralı arıza kaydınız için cihazınızı eksiksiz teslim aldığınızı onaylıyor musunuz?</p>
+                                                            <p class="text-danger small mb-0 mt-2">
+                                                                <i class="bi bi-exclamation-triangle-fill me-1"></i> Bu işlem geri alınamaz ve arıza kaydı kapatılacaktır.
+                                                            </p>
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+
+                                                            <form asp-action="KisiOnayiVer" asp-route-id="@item.Id" method="post" class="d-inline">
+                                                                <button type="submit" class="btn btn-success fw-bold">
+                                                                    Evet, Teslim Aldım
+                                                                </button>
+                                                            </form>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        else if (item.Durum == "İşlem Bitti")
+                                        {
+                                            <span class="text-success fw-semibold small"><i class="bi bi-shield-check me-1"></i>Kapatıldı</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small"><i class="bi bi-clock-history me-1"></i>Müdahale Bekleniyor</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    Sisteme henüz bir arıza kaydı bildirmediniz. Yeni bir arıza kaydı oluşturmak için sağ üstteki butonu kullanabilirsiniz.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@keyframes pulse {
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.7);
+        }
+
+        70% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 10px rgba(25, 135, 84, 0);
+        }
+
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(25, 135, 84, 0);
+        }
+    }
+
+    .animation-pulse {
+        animation: pulse 2s infinite;
+    }
+</style>
