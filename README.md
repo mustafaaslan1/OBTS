@@ -13,14 +13,14 @@
 
 ---
 
-## 📌 Proje Hakkında
+## Proje Hakkında
 **DHMİ Olay ve Bakım Takip Sistemi (OBTS)**; havalimanı terminali içerisinde meydana gelen teknik arıza, olay ve bakım süreçlerinin dijital ortamda şeffaf, hızlı ve güvenli bir şekilde takip edilmesini sağlayan kurumsal bir web tabanlı otomasyon sistemidir[cite: 1]. 
 
 Uygulama; havalimanı personelinin karşılaştığı teknik sorunları (örneğin apron aydınlatma, yürüyen merdiven veya donanım arızaları) konum, BİM (Demirbaş) kodu ve detay bilgileriyle birlikte sisteme bildirmesine, yetkili teknikerlerin ve yöneticilerin bu süreçleri uçtan uca yönetmesine olanak tanır.
 
 ---
 
-## 🚀 Temel Özellikler ve Modüller
+## Temel Özellikler ve Modüller
 
 ### 1. Rol Bazlı Kimlik Doğrulama ve Güvenlik (ASP.NET Core Identity)
 * **Hiyerarşik Yetkilendirme:** Sistemde **Yönetici**, **Tekniker** ve **Personel** olmak üzere 3 temel rol tanımlanmıştır.
@@ -43,7 +43,7 @@ Uygulama; havalimanı personelinin karşılaştığı teknik sorunları (örneğ
 
 ---
 
-## 🛠️ Teknik Altyapı ve Mimari
+## Teknik Altyapı ve Mimari
 
 | Katman / Teknoloji | Kullanılan Araçlar & Kütüphaneler |
 | :--- | :--- |
@@ -54,7 +54,7 @@ Uygulama; havalimanı personelinin karşılaştığı teknik sorunları (örneğ
 
 ---
 
-## 📂 Veritabanı Mimarisi (Code-First)
+## Veritabanı Mimarisi (Code-First)
 Projede ilişkisel veri bütünlüğünü sağlamak amacıyla şu temel modeller oluşturulmuştur:
 * **Arizalar:** Arıza başlığı, açıklama, bildirim/çözüm tarihleri, BİM kodu, öncelik derecesi, uçuş operasyon etkisi ve durum bilgileri.
 * **Konumlar:** Havalimanı içerisindeki birimlerin ve lokasyonların tutulduğu tablo (Foreign Key ile ilişkilendirilmiştir).
@@ -63,7 +63,7 @@ Projede ilişkisel veri bütünlüğünü sağlamak amacıyla şu temel modeller
 
 ---
 
-## ⚙️ Kurulum ve Çalıştırma
+## Kurulum ve Çalıştırma
 
 1. Repoyu bilgisayarınıza klonlayın:
    ```bash
@@ -77,5 +77,5 @@ Projede ilişkisel veri bütünlüğünü sağlamak amacıyla şu temel modeller
    Update-Database
 5. Projeyi derleyin ve IIS Express veya Kestrel üzerinden çalıştırın. (İlk çalıştırmada DbInitializer sınıfı sayesinde varsayılan roller ve yönetici hesabı otomatik olarak oluşturulacaktır).
 
-👨‍💻 Geliştirici
+Geliştirici
 Mustafa Aslan - Bilgisayar Mühendisi
