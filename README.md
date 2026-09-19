@@ -12,7 +12,7 @@
 ---
 
 ## Proje Hakkında
-**Olay ve Bakım Takip Sistemi (OBTS)**; havalimanı terminali içerisinde meydana gelen teknik arıza, olay ve bakım süreçlerinin dijital ortamda şeffaf, hızlı ve güvenli bir şekilde takip edilmesini sağlayan kurumsal bir web tabanlı otomasyon sistemidir[cite: 1]. 
+**Olay ve Bakım Takip Sistemi (OBTS)**; havalimanı terminali içerisinde meydana gelen teknik arıza, olay ve bakım süreçlerinin dijital ortamda şeffaf, hızlı ve güvenli bir şekilde takip edilmesini sağlayan kurumsal bir web tabanlı otomasyon sistemidir. 
 
 Uygulama; havalimanı personelinin karşılaştığı teknik sorunları (örneğin apron aydınlatma, yürüyen merdiven veya donanım arızaları) konum, BİM (Demirbaş) kodu ve detay bilgileriyle birlikte sisteme bildirmesine, yetkili teknikerlerin ve yöneticilerin bu süreçleri uçtan uca yönetmesine olanak tanır.
 
