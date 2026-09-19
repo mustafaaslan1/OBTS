@@ -1,20 +1,18 @@
 <div align="center">
 
-# ✈️ DHMİ - Olay ve Bakım Takip Sistemi (OBTS)
+# Olay ve Bakım Takip Sistemi (OBTS)
 
 [![C#](https://img.shields.io/badge/C%23-.NET%208-512BD4?style=for-the-badge&logo=c-sharp&logoColor=white)](#)
 [![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](#)
 [![MSSQL](https://img.shields.io/badge/Microsoft%20SQL%20Server-CC2927?style=for-the-badge&logo=microsoft-sql-server&logoColor=white)](#)
 [![Bootstrap 5](https://img.shields.io/badge/Bootstrap%205-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](#)
 
- Devlet Hava Meydanları İşletmesi (DHMİ) Esenboğa Havalimanı Başmüdürlüğü staj dönemi projesi.
-
 </div>
 
 ---
 
 ## Proje Hakkında
-**DHMİ Olay ve Bakım Takip Sistemi (OBTS)**; havalimanı terminali içerisinde meydana gelen teknik arıza, olay ve bakım süreçlerinin dijital ortamda şeffaf, hızlı ve güvenli bir şekilde takip edilmesini sağlayan kurumsal bir web tabanlı otomasyon sistemidir[cite: 1]. 
+**Olay ve Bakım Takip Sistemi (OBTS)**; havalimanı terminali içerisinde meydana gelen teknik arıza, olay ve bakım süreçlerinin dijital ortamda şeffaf, hızlı ve güvenli bir şekilde takip edilmesini sağlayan kurumsal bir web tabanlı otomasyon sistemidir[cite: 1]. 
 
 Uygulama; havalimanı personelinin karşılaştığı teknik sorunları (örneğin apron aydınlatma, yürüyen merdiven veya donanım arızaları) konum, BİM (Demirbaş) kodu ve detay bilgileriyle birlikte sisteme bildirmesine, yetkili teknikerlerin ve yöneticilerin bu süreçleri uçtan uca yönetmesine olanak tanır.
 
